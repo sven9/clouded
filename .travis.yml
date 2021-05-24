@@ -1,0 +1,36 @@
+language: python
+python:
+  - "3.6"
+  - "3.7"
+  - "3.8"
+  - "3.9"
+dist: xenial
+
+stages:
+  - lint
+  - test
+
+before_install:
+  - pip install --upgrade pip
+
+install:
+  - pip install poetry
+  - poetry install -v --no-interaction --no-root
+
+cache:
+  pip: true
+  directories:
+    - $HOME/.cache/pre-commit
+
+jobs:
+  include:
+    - stage: lint
+      install:
+        - pip install pre-commit
+      script: pre-commit run --all-files
+
+script:
+  - pytest --cov python_starter_project --cov-report xml tests
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
